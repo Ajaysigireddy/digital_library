@@ -109,7 +109,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   child: Text(
                     book.title,
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 10.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -145,7 +145,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               Expanded(
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
+                    crossAxisCount: 6,
                     crossAxisSpacing: 16.0,
                     mainAxisSpacing: 16.0,
                   ),

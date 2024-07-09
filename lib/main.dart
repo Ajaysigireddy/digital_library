@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => PdfButtonScreen(),
+        '/': (context) => LibraryScreen(),
         '/pdfViewer': (context) => PdfViewerScreen(pdfUrl: 'assets/b.pdf',),
       },
     );
