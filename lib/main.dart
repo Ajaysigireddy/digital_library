@@ -1,10 +1,9 @@
-import 'package:fllutter/screens/book_details_screen.dart';
-
-import 'package:fllutter/screens/login_Screen.dart';
-import 'package:flutter/material.dart';
 import 'package:fllutter/screens/library_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -16,11 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LibraryScreen(),
-
-      },
+      home: LibraryScreen(),
     );
   }
 }

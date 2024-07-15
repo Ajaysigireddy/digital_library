@@ -1,7 +1,8 @@
-import 'package:fllutter/pdf.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart'; // Assuming you're using this for PDF viewing
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fllutter/colors.dart'; // Custom colors
+import 'package:fllutter/pdf.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart'; // Assuming you're using this for PDF viewing
 import '../book.dart'; // Assuming you have a Book class defined elsewhere
 import 'pdf_viewer_screen.dart'; // Assuming PdfViewerPage is defined here
 
@@ -9,8 +10,7 @@ class BookDetailsScreen extends StatefulWidget {
   final Book book;
   final String pdfUrl; // Full URL for the PDF to display
 
-  const BookDetailsScreen({Key? key, required this.book, required this.pdfUrl})
-      : super(key: key);
+  const BookDetailsScreen({Key? key, required this.book, required this.pdfUrl}) : super(key: key);
 
   @override
   _BookDetailsScreenState createState() => _BookDetailsScreenState();
@@ -41,11 +41,11 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => PdfViewerPage(
-            s3BucketName: 'etl-pe-003', // Replace with your actual S3 bucket name
-            s3Region: 'ap-south-1', // Replace with your actual AWS region
-            s3AccessKey: 'AKIA4QAG6VAS4G2YH7UH', // Replace with your actual AWS access key
-            s3SecretKey: 'TtA7NOsK9tmYRGFbiqa0AmXpEF3qDZKdWAA4mnOs', // Replace with your actual AWS secret key
-            fileName: pdfPath, 
+            s3BucketName: dotenv.env['S3_BUCKET_NAME']!,
+            s3Region: dotenv.env['S3_REGION']!,
+            s3AccessKey: dotenv.env['S3_ACCESS_KEY']!,
+            s3SecretKey: dotenv.env['S3_SECRET_KEY']!,
+            fileName: pdfPath,
           ),
         ),
       );
@@ -152,18 +152,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.buttonColor,
                                 side: BorderSide(
-                                  color: _readButtonFocusNode.hasFocus
-                                      ? Colors.white
-                                      : Colors.transparent,
+                                  color: _readButtonFocusNode.hasFocus ? Colors.white : Colors.transparent,
                                   width: 2.0,
                                 ),
                                 elevation: _readButtonFocusNode.hasFocus ? 10.0 : 4.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                shadowColor: _readButtonFocusNode.hasFocus
-                                    ? Colors.red
-                                    : Colors.transparent,
+                                shadowColor: _readButtonFocusNode.hasFocus ? Colors.red : Colors.transparent,
                               ),
                               onPressed: () {
                                 openPdfViewer(context);
@@ -188,18 +184,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.buttonColor,
                                 side: BorderSide(
-                                  color: _continueReadingButtonFocusNode.hasFocus
-                                      ? Colors.white
-                                      : Colors.transparent,
+                                  color: _continueReadingButtonFocusNode.hasFocus ? Colors.white : Colors.transparent,
                                   width: 2.0,
                                 ),
                                 elevation: _continueReadingButtonFocusNode.hasFocus ? 10.0 : 4.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                shadowColor: _continueReadingButtonFocusNode.hasFocus
-                                    ? Colors.red
-                                    : Colors.transparent,
+                                shadowColor: _continueReadingButtonFocusNode.hasFocus ? Colors.red : Colors.transparent,
                               ),
                               onPressed: () {
                                 // Implement "Continue Reading" button functionality
