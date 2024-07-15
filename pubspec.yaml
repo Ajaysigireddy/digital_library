@@ -46,10 +46,6 @@ dependencies:
   dpad_container: ^2.0.4
   flutter_cache_manager: ^3.3.2
   pdf_render: ^1.4.7
-  minio_flutter: ^0.0.1
-  aws_s3_api: ^2.0.0
-  amplify_flutter: ^2.2.0
-  amplify_storage_s3: ^2.2.0
 
 dev_dependencies:
   flutter_test:

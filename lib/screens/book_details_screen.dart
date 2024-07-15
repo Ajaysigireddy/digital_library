@@ -41,10 +41,10 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => PdfViewerPage(
-            s3BucketName: dotenv.env['S3_BUCKET_NAME']!,
-            s3Region: dotenv.env['S3_REGION']!,
-            s3AccessKey: dotenv.env['S3_ACCESS_KEY']!,
-            s3SecretKey: dotenv.env['S3_SECRET_KEY']!,
+            s3BucketName: "",
+            s3Region: "",
+            s3AccessKey: "",
+            s3SecretKey:"",
             fileName: pdfPath,
           ),
         ),
