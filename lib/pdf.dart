@@ -38,13 +38,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   void initState() {
     super.initState();
     _pdfViewerFocusNode.requestFocus();
-    RawKeyboard.instance.addListener(_handleKeyEvent);
     _initializePdfViewer();
   }
 
   @override
   void dispose() {
-    RawKeyboard.instance.removeListener(_handleKeyEvent);
     _pdfViewerFocusNode.dispose();
     super.dispose();
   }
@@ -67,45 +65,43 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       });
     }
   }
-Future<String> getSignedUrl(String bucket, String key, String region, String accessKey, String secretKey) async {
-  final DateTime now = DateTime.now().toUtc(); // Use UTC time consistently
-  final int expiry = now.add(Duration(minutes: 10)).millisecondsSinceEpoch ~/ 1000; // Consider a longer expiry for testing
 
-  final String method = 'GET';
-  final String service = 's3';
-  final String host = '$bucket.s3.$region.amazonaws.com';
-  final String canonicalUri = '/$key';
-  final String signedHeaders = 'host';
-  final String payloadHash = 'UNSIGNED-PAYLOAD';
+  Future<String> getSignedUrl(String bucket, String key, String region, String accessKey, String secretKey) async {
+    final DateTime now = DateTime.now().toUtc(); // Use UTC time consistently
+    final int expiry = now.add(Duration(minutes: 10)).millisecondsSinceEpoch ~/ 1000; // Consider a longer expiry for testing
 
-  final String amzDate = now.toIso8601String().replaceAll(':', '').replaceAll('-', '').split('.')[0] + 'Z';
-  final String dateStamp = amzDate.substring(0, 8);
+    final String method = 'GET';
+    final String service = 's3';
+    final String host = '$bucket.s3.$region.amazonaws.com';
+    final String canonicalUri = '/$key';
+    final String signedHeaders = 'host';
+    final String payloadHash = 'UNSIGNED-PAYLOAD';
 
-  final String credentialScope = '$dateStamp/$region/$service/aws4_request';
+    final String amzDate = now.toIso8601String().replaceAll(':', '').replaceAll('-', '').split('.')[0] + 'Z';
+    final String dateStamp = amzDate.substring(0, 8);
 
-  final String canonicalQueryString = 'X-Amz-Algorithm=AWS4-HMAC-SHA256'
-      '&X-Amz-Credential=${Uri.encodeComponent('$accessKey/$credentialScope')}' // Double-check encoding
-      '&X-Amz-Date=$amzDate'
-      '&X-Amz-Expires=600'  // Consider a longer expiry for testing
-      '&X-Amz-SignedHeaders=$signedHeaders';
+    final String credentialScope = '$dateStamp/$region/$service/aws4_request';
 
-  final String canonicalHeaders = 'host:$host\n';
+    final String canonicalQueryString = 'X-Amz-Algorithm=AWS4-HMAC-SHA256'
+        '&X-Amz-Credential=${Uri.encodeComponent('$accessKey/$credentialScope')}' // Double-check encoding
+        '&X-Amz-Date=$amzDate'
+        '&X-Amz-Expires=600'  // Consider a longer expiry for testing
+        '&X-Amz-SignedHeaders=$signedHeaders';
 
-  final String canonicalRequest = '$method\n$canonicalUri\n$canonicalQueryString\n$canonicalHeaders\n$signedHeaders\n$payloadHash';
-  final String hashCanonicalRequest = sha256.convert(utf8.encode(canonicalRequest)).toString();
+    final String canonicalHeaders = 'host:$host\n';
 
-  final String stringToSign = 'AWS4-HMAC-SHA256\n$amzDate\n$credentialScope\n$hashCanonicalRequest';
+    final String canonicalRequest = '$method\n$canonicalUri\n$canonicalQueryString\n$canonicalHeaders\n$signedHeaders\n$payloadHash';
+    final String hashCanonicalRequest = sha256.convert(utf8.encode(canonicalRequest)).toString();
 
-  final signingKey = _getSignatureKey(secretKey, dateStamp, region, service); // Verify _getSignatureKey implementation
-  final String signature = Hmac(sha256, signingKey).convert(utf8.encode(stringToSign)).toString();
+    final String stringToSign = 'AWS4-HMAC-SHA256\n$amzDate\n$credentialScope\n$hashCanonicalRequest';
 
-  final String presignedUrl = 'https://$host$canonicalUri?$canonicalQueryString&X-Amz-Signature=$signature';
+    final signingKey = _getSignatureKey(secretKey, dateStamp, region, service); // Verify _getSignatureKey implementation
+    final String signature = Hmac(sha256, signingKey).convert(utf8.encode(stringToSign)).toString();
 
-  return presignedUrl;
-}
+    final String presignedUrl = 'https://$host$canonicalUri?$canonicalQueryString&X-Amz-Signature=$signature';
 
-
-
+    return presignedUrl;
+  }
 
   List<int> _getSignatureKey(String key, String dateStamp, String regionName, String serviceName) {
     final kDate = Hmac(sha256, utf8.encode('AWS4$key')).convert(utf8.encode(dateStamp)).bytes;
@@ -125,14 +121,12 @@ Future<String> getSignedUrl(String bucket, String key, String region, String acc
       }
 
       final response = await http.get(Uri.parse(presignedUrl));
-      print(presignedUrl);
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes);
         setState(() {
           localFilePath = file.path;
           _isLoading = false;
         });
-        print(localFilePath);
         print('Download time: ${stopwatch.elapsedMilliseconds} ms');
       } else {
         print('Failed to download file: ${response.statusCode}');
@@ -152,13 +146,9 @@ Future<String> getSignedUrl(String bucket, String key, String region, String acc
     if (event is RawKeyDownEvent) {
       if (_pdfViewerFocusNode.hasFocus) {
         if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          if (_currentPage > 1) {
-            pdfViewerController.previousPage();
-          }
+          // Handle scroll up logic if needed
         } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          if (_currentPage < _totalPages) {
-            pdfViewerController.nextPage();
-          }
+          // Handle scroll down logic
         } else if (event.logicalKey == LogicalKeyboardKey.select) {
           _showPageJumpDialog(context);
         }
@@ -176,22 +166,26 @@ Future<String> getSignedUrl(String bucket, String key, String region, String acc
         child: _isLoading
             ? CircularProgressIndicator()
             : localFilePath != null
-                ? SfPdfViewer.file(
-                    File(localFilePath!),
-                    controller: pdfViewerController,
-                    onPageChanged: (PdfPageChangedDetails details) {
-                      setState(() {
-                        _currentPage = details.newPageNumber;
-                      });
-                    },
-                    onDocumentLoaded: (PdfDocumentLoadedDetails details) {
-                      setState(() {
-                        _totalPages = details.document.pages.count;
-                      });
-                    },
-                    onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
-                      print('Document load failed: ${details.error}');
-                    },
+                ? RawKeyboardListener(
+                    focusNode: _pdfViewerFocusNode,
+                    onKey: _handleKeyEvent,
+                    child: SfPdfViewer.file(
+                      File(localFilePath!),
+                      controller: pdfViewerController,
+                      onPageChanged: (PdfPageChangedDetails details) {
+                        setState(() {
+                          _currentPage = details.newPageNumber;
+                        });
+                      },
+                      onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+                        setState(() {
+                          _totalPages = details.document.pages.count;
+                        });
+                      },
+                      onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                        print('Document load failed: ${details.error}');
+                      },
+                    ),
                   )
                 : Text('Error loading PDF'),
       ),
