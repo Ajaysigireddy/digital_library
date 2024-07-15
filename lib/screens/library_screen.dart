@@ -103,14 +103,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   void _openBookDetails(Book book) {
+    print(book.isbn);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BookDetailsScreen(
           book: book,
-          pdfUrl: book.bookUrl,
+           isbn:book.isbn,
         ),
       ),
+      
     );
   }
 

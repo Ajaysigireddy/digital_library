@@ -9,6 +9,7 @@ class Book {
   final String bookUrl; // Correct field name
   final String coverImageUrl;
   final int reads;
+  
 
   Book({
     required this.id,

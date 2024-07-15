@@ -46,6 +46,8 @@ dependencies:
   dpad_container: ^2.0.4
   flutter_cache_manager: ^3.3.2
   pdf_render: ^1.4.7
+  shared_preferences: ^2.2.3
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:

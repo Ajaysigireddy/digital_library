@@ -8,9 +8,9 @@ import './pdf_viewer_screen.dart'; // Assuming PdfViewerPage is defined here
 
 class BookDetailsScreen extends StatefulWidget {
   final Book book;
-  final String pdfUrl; // Full URL for the PDF to display
-
-  const BookDetailsScreen({Key? key, required this.book, required this.pdfUrl}) : super(key: key);
+  final String isbn;
+ 
+  const BookDetailsScreen({Key? key, required this.book, required String this.isbn}) : super(key: key);
 
   @override
   _BookDetailsScreenState createState() => _BookDetailsScreenState();
@@ -35,17 +35,13 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
   }
 
   void openPdfViewer(BuildContext context) {
-    String pdfPath = _extractPdfPath(widget.pdfUrl); // Extract path from full URL
-    if (pdfPath.isNotEmpty) {
+    String isbnNumber = widget.isbn;// Extract path from full URL
+    if (isbnNumber.isNotEmpty) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PdfViewerPage(
-             s3BucketName: 'etl-pe-003', // Replace with your actual S3 bucket name
-            s3Region: 'ap-south-1', // Replace with your actual AWS region
-            s3AccessKey: 'AKIA4QAG6VAS4G2YH7UH', // Replace with your actual AWS access key
-            s3SecretKey: 'TtA7NOsK9tmYRGFbiqa0AmXpEF3qDZKdWAA4mnOs', // Replace with your actual AWS secret key
-            fileName: pdfPath,
+          builder: (context) => PdfViewerPage(isbn: widget.isbn,
+           
           ),
         ),
       );
@@ -59,14 +55,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     }
   }
 
-  String _extractPdfPath(String url) {
-    // Assuming the URL structure is consistent and the PDF path starts after the bucket URL
-    const String baseUrl = 'https://etl-pe-003.s3.ap-south-1.amazonaws.com/';
-    if (url.startsWith(baseUrl)) {
-      return url.substring(baseUrl.length);
-    }
-    return '';
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +121,11 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                       SizedBox(height: 8.0),
                       Text(
                         'Subject: ${widget.book.subject}',
+                        style: TextStyle(fontSize: 18.0, color: AppColors.textColor),
+                      ),
+                      SizedBox(height: 8.0),
+                      Text(
+                        'ISBN: ${widget.book.isbn}', // Display the ISBN
                         style: TextStyle(fontSize: 18.0, color: AppColors.textColor),
                       ),
                       SizedBox(height: 8.0),
