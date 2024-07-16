@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fllutter/colors.dart'; // Custom colors
 import 'package:fllutter/pdf.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart'; // Assuming you're using this for PDF viewing
+import 'package:shared_preferences/shared_preferences.dart';
 import '../book.dart'; // Assuming you have a Book class defined elsewhere
 import './pdf_viewer_screen.dart'; // Assuming PdfViewerPage is defined here
 
@@ -10,7 +11,7 @@ class BookDetailsScreen extends StatefulWidget {
   final Book book;
   final String isbn;
  
-  const BookDetailsScreen({Key? key, required this.book, required String this.isbn}) : super(key: key);
+  const BookDetailsScreen({Key? key, required this.book, required this.isbn}) : super(key: key);
 
   @override
   _BookDetailsScreenState createState() => _BookDetailsScreenState();
@@ -34,15 +35,17 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     super.dispose();
   }
 
-  void openPdfViewer(BuildContext context) {
-    String isbnNumber = widget.isbn;// Extract path from full URL
+  void openPdfViewer(BuildContext context) async {
+    String isbnNumber = widget.isbn; // Extract path from full URL
     if (isbnNumber.isNotEmpty) {
+      // Retrieve last viewed page from storage
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int lastViewedPage = prefs.getInt('last_viewed_page') ?? 0;
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PdfViewerPage(isbn: widget.isbn,
-           
-          ),
+          builder: (context) => PdfViewerPage(isbn: widget.isbn, initialPage: lastViewedPage),
         ),
       );
     } else {
@@ -54,8 +57,6 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,10 +147,10 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.buttonColor,
                                 side: BorderSide(
-                                  color: _readButtonFocusNode.hasFocus ? Colors.white : Colors.transparent,
-                                  width: 2.0,
+                                  color: _readButtonFocusNode.hasFocus ? const Color.fromARGB(255, 255, 255, 255) : Colors.transparent,
+                                  width: _readButtonFocusNode.hasFocus ? 4.0 : 0.0,
                                 ),
-                                elevation: _readButtonFocusNode.hasFocus ? 10.0 : 4.0,
+                                elevation: _readButtonFocusNode.hasFocus ? 12.0 : 4.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -163,7 +164,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                 style: TextStyle(
                                   color: _readButtonFocusNode.hasFocus
                                       ? const Color.fromARGB(255, 255, 255, 255)
-                                      : Color.fromARGB(255, 255, 255, 255),
+                                      : const Color.fromARGB(255, 255, 255, 255),
                                 ),
                               ),
                             ),
@@ -178,24 +179,24 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.buttonColor,
                                 side: BorderSide(
-                                  color: _continueReadingButtonFocusNode.hasFocus ? Colors.white : Colors.transparent,
-                                  width: 2.0,
+                                  color: _continueReadingButtonFocusNode.hasFocus ? const Color.fromARGB(255, 255, 255, 255) : Colors.transparent,
+                                  width: _continueReadingButtonFocusNode.hasFocus ? 4.0 : 0.0,
                                 ),
-                                elevation: _continueReadingButtonFocusNode.hasFocus ? 10.0 : 4.0,
+                                elevation: _continueReadingButtonFocusNode.hasFocus ? 12.0 : 4.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 shadowColor: _continueReadingButtonFocusNode.hasFocus ? Colors.red : Colors.transparent,
                               ),
-                              onPressed: () {
-                                // Implement "Continue Reading" button functionality
+                              onPressed: () async {
+                                openPdfViewer(context);
                               },
                               child: Text(
                                 'Continue Reading',
                                 style: TextStyle(
                                   color: _continueReadingButtonFocusNode.hasFocus
                                       ? const Color.fromARGB(255, 255, 255, 255)
-                                      : Color.fromARGB(255, 255, 255, 255),
+                                      : const Color.fromARGB(255, 255, 255, 255),
                                 ),
                               ),
                             ),
