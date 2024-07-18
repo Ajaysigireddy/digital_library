@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fllutter/colors.dart'; // Custom colors
 import 'package:fllutter/pdf.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart'; // Assuming you're using this for PDF viewing
+import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../book.dart'; // Assuming you have a Book class defined elsewhere
 import './pdf_viewer_screen.dart'; // Assuming PdfViewerPage is defined here
@@ -45,7 +46,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PdfViewerPage(isbn: widget.isbn, initialPage: lastViewedPage),
+          builder: (context) => PdfViewerPage(isbn: widget.isbn,),
         ),
       );
     } else {

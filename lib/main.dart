@@ -19,7 +19,9 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
       
-        '/': (context) => LibraryScreen(), // Adjust the route name and widget according to your project
+        '/': (context) => LoginPage(), 
+        '/library':(context)=>LibraryScreen()
+        // Adjust the route name and widget according to your project
       },
     );
   }

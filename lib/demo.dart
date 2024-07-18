@@ -8,7 +8,7 @@ import 'package:pdf_render/pdf_render_widgets.dart';
 
 class PDFViewer extends StatefulWidget {
   static const String route = "PDFViewer";
-  const PDFViewer({Key? key, required this.pdfUrl}) : super(key: key);
+  const PDFViewer({Key? key, required this.pdfUrl, required String isbn}) : super(key: key);
 
   final String pdfUrl;
 
